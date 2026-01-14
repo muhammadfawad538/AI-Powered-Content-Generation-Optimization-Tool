@@ -1,0 +1,210 @@
+# Quality Review API Contract
+
+## Endpoint: `POST /api/v1/content/review-quality`
+
+### Description
+Reviews content for quality metrics including clarity, readability, engagement, and flow, providing improvement suggestions while preserving original tone and style.
+
+### Request
+
+#### Headers
+- `Content-Type: application/json`
+- `Authorization: Bearer {api_key}`
+
+#### Body Schema
+```json
+{
+  "content_id": {
+    "type": "string",
+    "description": "Identifier for the content being reviewed",
+    "example": "content_12345"
+  },
+  "content": {
+    "type": "string",
+    "minLength": 50,
+    "maxLength": 10000,
+    "description": "The content to review for quality",
+    "example": "Your content here..."
+  },
+  "target_audience": {
+    "type": "string",
+    "description": "Audience for whom the content is intended",
+    "enum": ["general_public", "experts", "students", "business_professionals", "environmental_advocates"],
+    "example": "general_public"
+  },
+  "review_aspect": {
+    "type": "array",
+    "items": {
+      "type": "string",
+      "enum": ["clarity", "readability", "engagement", "flow"]
+    },
+    "minItems": 1,
+    "maxItems": 4,
+    "description": "Aspects to review",
+    "example": ["clarity", "readability", "engagement"]
+  },
+  "preserve_tone": {
+    "type": "boolean",
+    "default": true,
+    "description": "Whether to maintain the original tone",
+    "example": true
+  },
+  "style_guidelines": {
+    "type": "object",
+    "description": "Specific style guidelines to follow",
+    "example": {
+      "voice": "passive",
+      "sentence_length": "medium",
+      "vocabulary_level": "intermediate"
+    }
+  }
+}
+```
+
+### Response
+
+#### Success Response (200 OK)
+```json
+{
+  "content_id": {
+    "type": "string",
+    "description": "Identifier matching the original request",
+    "example": "content_12345"
+  },
+  "original_content": {
+    "type": "string",
+    "description": "The original content submitted for review",
+    "example": "Original content here..."
+  },
+  "improved_content": {
+    "type": "string",
+    "description": "Content with quality improvements applied",
+    "example": "Improved content here..."
+  },
+  "clarity_score": {
+    "type": "number",
+    "minimum": 0.0,
+    "maximum": 100.0,
+    "description": "Clarity rating",
+    "example": 85.2
+  },
+  "readability_score": {
+    "type": "number",
+    "minimum": 0.0,
+    "maximum": 100.0,
+    "description": "Readability rating",
+    "example": 78.5
+  },
+  "engagement_score": {
+    "type": "number",
+    "minimum": 0.0,
+    "maximum": 100.0,
+    "description": "Engagement potential rating",
+    "example": 92.1
+  },
+  "flow_score": {
+    "type": "number",
+    "minimum": 0.0,
+    "maximum": 100.0,
+    "description": "Content flow rating",
+    "example": 88.7
+  },
+  "improvement_summary": {
+    "type": "array",
+    "items": {
+      "type": "object",
+      "properties": {
+        "aspect": {
+          "type": "string",
+          "enum": ["clarity", "readability", "engagement", "flow"]
+        },
+        "before": {
+          "type": "string",
+          "description": "Original text segment"
+        },
+        "after": {
+          "type": "string",
+          "description": "Improved text segment"
+        },
+        "reason": {
+          "type": "string",
+          "description": "Reason for the change"
+        }
+      }
+    },
+    "description": "Summary of changes made",
+    "example": [
+      {
+        "aspect": "clarity",
+        "before": "The thing was good.",
+        "after": "The product exceeded expectations.",
+        "reason": "Replaced vague language with specific description"
+      }
+    ]
+  },
+  "preserved_elements": {
+    "type": "array",
+    "items": {
+      "type": "string"
+    },
+    "description": "Elements that were preserved",
+    "example": ["original tone", "key terminology", "brand voice"]
+  },
+  "review_timestamp": {
+    "type": "string",
+    "format": "date-time",
+    "description": "Time of review completion",
+    "example": "2026-01-13T10:30:00Z"
+  }
+}
+```
+
+#### Error Response (400 Bad Request)
+```json
+{
+  "error": {
+    "type": "string",
+    "description": "Error message",
+    "example": "Invalid input parameters"
+  },
+  "details": {
+    "type": "object",
+    "description": "Detailed error information",
+    "example": {
+      "content": "Content must be between 50 and 10000 characters",
+      "review_aspect": "At least one aspect must be specified"
+    }
+  }
+}
+```
+
+#### Error Response (401 Unauthorized)
+```json
+{
+  "error": {
+    "type": "string",
+    "description": "Authentication error message",
+    "example": "Invalid or missing API key"
+  }
+}
+```
+
+#### Error Response (429 Too Many Requests)
+```json
+{
+  "error": {
+    "type": "string",
+    "description": "Rate limit error message",
+    "example": "Rate limit exceeded. Please try again later."
+  }
+}
+```
+
+### Rate Limits
+- 50 requests per minute per API key for quality review
+- Exceeding the limit results in a 429 status code
+
+### Expected Response Time
+- Under 5 seconds for content under 1000 words
+- Under 10 seconds for content under 3000 words
+- Under 15 seconds for content up to 10000 words

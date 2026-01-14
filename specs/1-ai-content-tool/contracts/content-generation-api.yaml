@@ -1,0 +1,168 @@
+# Content Generation API Contract
+
+## Endpoint: `POST /api/v1/content/generate`
+
+### Description
+Generates content based on user-provided parameters including topic, audience, tone, style, format, and length.
+
+### Request
+
+#### Headers
+- `Content-Type: application/json`
+- `Authorization: Bearer {api_key}`
+
+#### Body Schema
+```json
+{
+  "topic": {
+    "type": "string",
+    "minLength": 5,
+    "maxLength": 200,
+    "description": "Main subject or theme for content generation",
+    "example": "Benefits of renewable energy"
+  },
+  "audience": {
+    "type": "string",
+    "enum": ["general_public", "experts", "students", "business_professionals", "environmental_advocates"],
+    "description": "Target audience for the content",
+    "example": "environmental_advocates"
+  },
+  "tone": {
+    "type": "string",
+    "enum": ["formal", "casual", "professional", "informative", "persuasive", "humorous"],
+    "description": "Desired tone of the content",
+    "example": "informative"
+  },
+  "style": {
+    "type": "string",
+    "enum": ["narrative", "informative", "persuasive", "descriptive", "educational"],
+    "description": "Writing style preferences",
+    "example": "educational"
+  },
+  "format": {
+    "type": "string",
+    "enum": ["blog_post", "social_media", "product_description", "article", "script"],
+    "description": "Content format",
+    "example": "blog_post"
+  },
+  "length": {
+    "type": "integer",
+    "minimum": 100,
+    "maximum": 5000,
+    "description": "Target length in words",
+    "example": 800
+  },
+  "keywords": {
+    "type": "array",
+    "items": {
+      "type": "string",
+      "maxLength": 50
+    },
+    "maxItems": 10,
+    "description": "SEO keywords to incorporate naturally",
+    "example": ["sustainability", "clean energy"]
+  }
+}
+```
+
+### Response
+
+#### Success Response (200 OK)
+```json
+{
+  "id": {
+    "type": "string",
+    "description": "Unique identifier for the request",
+    "example": "req_1234567890"
+  },
+  "content": {
+    "type": "string",
+    "description": "Generated content text",
+    "example": "Renewable energy sources are becoming increasingly important..."
+  },
+  "word_count": {
+    "type": "integer",
+    "description": "Actual word count of generated content",
+    "example": 795
+  },
+  "quality_score": {
+    "type": "number",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "description": "Score representing content quality",
+    "example": 0.89
+  },
+  "generation_time": {
+    "type": "number",
+    "description": "Time taken to generate content in seconds",
+    "example": 4.2
+  },
+  "status": {
+    "type": "string",
+    "enum": ["success", "error", "partial"],
+    "description": "Status of the generation process",
+    "example": "success"
+  },
+  "feedback": {
+    "type": "string",
+    "nullable": true,
+    "description": "Optional feedback about the generation process",
+    "example": null
+  },
+  "timestamp": {
+    "type": "string",
+    "format": "date-time",
+    "description": "Time of response creation",
+    "example": "2026-01-13T10:30:00Z"
+  }
+}
+```
+
+#### Error Response (400 Bad Request)
+```json
+{
+  "error": {
+    "type": "string",
+    "description": "Error message",
+    "example": "Invalid input parameters"
+  },
+  "details": {
+    "type": "object",
+    "description": "Detailed error information",
+    "example": {
+      "topic": "Field is required",
+      "length": "Must be between 100 and 5000"
+    }
+  }
+}
+```
+
+#### Error Response (401 Unauthorized)
+```json
+{
+  "error": {
+    "type": "string",
+    "description": "Authentication error message",
+    "example": "Invalid or missing API key"
+  }
+}
+```
+
+#### Error Response (429 Too Many Requests)
+```json
+{
+  "error": {
+    "type": "string",
+    "description": "Rate limit error message",
+    "example": "Rate limit exceeded. Please try again later."
+  }
+}
+```
+
+### Rate Limits
+- 100 requests per minute per API key
+- Exceeding the limit results in a 429 status code
+
+### Expected Response Time
+- Under 10 seconds for content up to 1000 words
+- May take longer for longer content or complex topics

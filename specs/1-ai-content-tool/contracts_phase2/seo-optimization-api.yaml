@@ -1,0 +1,195 @@
+# SEO Optimization API Contract
+
+## Endpoint: `POST /api/v1/content/analyze-seo`
+
+### Description
+Analyzes content for SEO metrics including keyword density, readability, heading structure, and provides optimization recommendations.
+
+### Request
+
+#### Headers
+- `Content-Type: application/json`
+- `Authorization: Bearer {api_key}`
+
+#### Body Schema
+```json
+{
+  "content_id": {
+    "type": "string",
+    "description": "Identifier for the content being analyzed",
+    "example": "content_12345"
+  },
+  "content": {
+    "type": "string",
+    "minLength": 100,
+    "maxLength": 10000,
+    "description": "The content to analyze for SEO",
+    "example": "Your content here..."
+  },
+  "target_keywords": {
+    "type": "array",
+    "items": {
+      "type": "string",
+      "maxLength": 50
+    },
+    "maxItems": 20,
+    "description": "Keywords to analyze for optimization",
+    "example": ["keyword1", "keyword2"]
+  },
+  "competitor_urls": {
+    "type": "array",
+    "items": {
+      "type": "string",
+      "format": "uri"
+    },
+    "maxItems": 5,
+    "description": "URLs of competitor content for comparison (optional)",
+    "example": ["https://example.com/competitor-content"]
+  },
+  "analysis_depth": {
+    "type": "string",
+    "enum": ["basic", "detailed", "comprehensive"],
+    "default": "detailed",
+    "description": "Level of analysis",
+    "example": "detailed"
+  }
+}
+```
+
+### Response
+
+#### Success Response (200 OK)
+```json
+{
+  "content_id": {
+    "type": "string",
+    "description": "Identifier matching the original request",
+    "example": "content_12345"
+  },
+  "keyword_density": {
+    "type": "object",
+    "description": "Density of each target keyword",
+    "example": {
+      "keyword1": 0.025,
+      "keyword2": 0.018
+    }
+  },
+  "readability_score": {
+    "type": "number",
+    "minimum": 0.0,
+    "maximum": 100.0,
+    "description": "Overall readability score",
+    "example": 78.5
+  },
+  "heading_structure": {
+    "type": "object",
+    "description": "Count of H1, H2, H3, etc. tags",
+    "example": {
+      "h1": 1,
+      "h2": 3,
+      "h3": 5
+    }
+  },
+  "meta_description": {
+    "type": "string",
+    "description": "Suggested meta description",
+    "example": "A concise description of the content for search engines"
+  },
+  "title_suggestions": {
+    "type": "array",
+    "items": {
+      "type": "string"
+    },
+    "description": "Recommended titles",
+    "example": ["Suggested Title 1", "Suggested Title 2"]
+  },
+  "recommended_keywords": {
+    "type": "array",
+    "items": {
+      "type": "string"
+    },
+    "description": "Additional keywords to consider",
+    "example": ["related-keyword1", "related-keyword2"]
+  },
+  "seo_score": {
+    "type": "number",
+    "minimum": 0.0,
+    "maximum": 100.0,
+    "description": "Overall SEO score",
+    "example": 82.3
+  },
+  "improvement_suggestions": {
+    "type": "array",
+    "items": {
+      "type": "string"
+    },
+    "description": "Specific suggestions for improvement",
+    "example": ["Add more H2 headings", "Increase keyword density for 'keyword1'"]
+  },
+  "competitor_comparison": {
+    "type": "object",
+    "description": "Comparison with competitor content",
+    "example": {
+      "average_word_count": 1200,
+      "common_keywords": ["common1", "common2"],
+      "strengths": ["better_headings", "more_images"]
+    }
+  },
+  "report_timestamp": {
+    "type": "string",
+    "format": "date-time",
+    "description": "Time of analysis completion",
+    "example": "2026-01-13T10:30:00Z"
+  }
+}
+```
+
+#### Error Response (400 Bad Request)
+```json
+{
+  "error": {
+    "type": "string",
+    "description": "Error message",
+    "example": "Invalid input parameters"
+  },
+  "details": {
+    "type": "object",
+    "description": "Detailed error information",
+    "example": {
+      "content": "Content must be between 100 and 10000 characters",
+      "target_keywords": "Keyword list must not exceed 20 items"
+    }
+  }
+}
+```
+
+#### Error Response (401 Unauthorized)
+```json
+{
+  "error": {
+    "type": "string",
+    "description": "Authentication error message",
+    "example": "Invalid or missing API key"
+  }
+}
+```
+
+#### Error Response (429 Too Many Requests)
+```json
+{
+  "error": {
+    "type": "string",
+    "description": "Rate limit error message",
+    "example": "Rate limit exceeded. Please try again later."
+  }
+}
+```
+
+### Rate Limits
+- 50 requests per minute per API key for SEO analysis
+- Exceeding the limit results in a 429 status code
+
+### Expected Response Time
+- Under 5 seconds for basic analysis
+- Under 10 seconds for detailed analysis
+- Under 15 seconds for comprehensive analysis

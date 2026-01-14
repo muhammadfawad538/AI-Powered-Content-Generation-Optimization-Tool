@@ -1,0 +1,69 @@
+# /sp.constitution
+## AI-Powered Content Generation & Optimization Tool
+
+---
+
+## 1. Mission
+Create a user-controlled AI system that generates **high-quality, original, audience-targeted, and SEO-optimized content**, balancing creativity, optimization, and ethical responsibility.
+
+---
+
+## 2. User Control
+- Users define topic, audience, tone, style, format, and length  
+- AI assists; users decide  
+- Iterative refinement is supported  
+
+---
+
+## 3. Content Quality
+- Content must be relevant, coherent, and readable  
+- Tone and style must match user intent  
+- Avoid filler, repetition, and generic phrasing  
+
+---
+
+## 4. SEO Principles
+- Optimize for humans first, search engines second  
+- No keyword stuffing or manipulative SEO  
+- SEO feedback must be clear and actionable  
+
+---
+
+## 5. Ethics & Originality
+- Enforce originality and plagiarism awareness  
+- Flag ethical, credibility, or policy risks  
+- Encourage responsible and professional content use  
+
+---
+
+## 6. Evaluation & Feedback
+- Evaluate readability, engagement, structure, and SEO  
+- Metrics guide improvement, not rejection  
+- Feedback must be practical and understandable  
+
+---
+
+## 7. System Design
+- Modular, scalable architecture  
+- Subagents perform single, isolated tasks  
+- Main system controls workflow and user interaction  
+
+---
+
+## 8. Success Criteria
+The system succeeds if it:
+- Reduces content creation time  
+- Improves quality and consistency  
+- Preserves authenticity while improving visibility  
+
+---
+
+## 9. Boundaries
+The system must not:
+- Replace human judgment  
+- Produce deceptive, plagiarized, or harmful content  
+- Optimize purely for algorithms over users  
+
+---
+
+**All development decisions must comply with this constitution.**

@@ -1,0 +1,201 @@
+# Ethics Check API Contract
+
+## Endpoint: `POST /api/v1/content/check-ethics`
+
+### Description
+Checks content for plagiarism, ethical risks, and policy violations, ensuring compliance with copyright and professional guidelines.
+
+### Request
+
+#### Headers
+- `Content-Type: application/json`
+- `Authorization: Bearer {api_key}`
+
+#### Body Schema
+```json
+{
+  "content_id": {
+    "type": "string",
+    "description": "Identifier for the content being checked",
+    "example": "content_12345"
+  },
+  "content": {
+    "type": "string",
+    "minLength": 50,
+    "maxLength": 10000,
+    "description": "The content to check for ethical issues",
+    "example": "Your content here..."
+  },
+  "reference_sources": {
+    "type": "array",
+    "items": {
+      "type": "string",
+      "format": "uri"
+    },
+    "maxItems": 20,
+    "description": "Known sources to check against",
+    "example": ["https://example.com/reference1", "https://example.com/reference2"]
+  },
+  "check_type": {
+    "type": "array",
+    "items": {
+      "type": "string",
+      "enum": ["plagiarism", "ethics", "policy"]
+    },
+    "minItems": 1,
+    "maxItems": 3,
+    "description": "Types of checks to perform",
+    "example": ["plagiarism", "ethics"]
+  },
+  "exclude_self_content": {
+    "type": "boolean",
+    "default": false,
+    "description": "Whether to exclude user's own previous content from checks",
+    "example": true
+  }
+}
+```
+
+### Response
+
+#### Success Response (200 OK)
+```json
+{
+  "content_id": {
+    "type": "string",
+    "description": "Identifier matching the original request",
+    "example": "content_12345"
+  },
+  "original_content": {
+    "type": "string",
+    "description": "The original content submitted for review",
+    "example": "Original content here..."
+  },
+  "plagiarism_detected": {
+    "type": "boolean",
+    "description": "Whether potential plagiarism was detected",
+    "example": false
+  },
+  "similar_content_sources": {
+    "type": "array",
+    "items": {
+      "type": "object",
+      "properties": {
+        "source_url": {
+          "type": "string",
+          "format": "uri"
+        },
+        "similarity_score": {
+          "type": "number",
+          "minimum": 0.0,
+          "maximum": 1.0
+        },
+        "matched_text": {
+          "type": "string"
+        }
+      }
+    },
+    "description": "Sources of similar content",
+    "example": [
+      {
+        "source_url": "https://example.com/source1",
+        "similarity_score": 0.85,
+        "matched_text": "Similar text fragment here..."
+      }
+    ]
+  },
+  "ethical_risk_level": {
+    "type": "string",
+    "enum": ["low", "medium", "high"],
+    "description": "Risk level",
+    "example": "low"
+  },
+  "ethical_concerns": {
+    "type": "array",
+    "items": {
+      "type": "string"
+    },
+    "description": "Specific ethical concerns identified",
+    "example": ["potentially_sensitive_topic", "biased_language"]
+  },
+  "policy_violations": {
+    "type": "array",
+    "items": {
+      "type": "string"
+    },
+    "description": "Policy violations detected",
+    "example": ["copyright_infringement", "misinformation"]
+  },
+  "confidence_score": {
+    "type": "number",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "description": "Confidence in the analysis",
+    "example": 0.92
+  },
+  "recommendations": {
+    "type": "array",
+    "items": {
+      "type": "string"
+    },
+    "description": "Recommendations to address issues",
+    "example": ["Add proper citations", "Rephrase sensitive content"]
+  },
+  "check_timestamp": {
+    "type": "string",
+    "format": "date-time",
+    "description": "Time of ethical check completion",
+    "example": "2026-01-13T10:30:00Z"
+  }
+}
+```
+
+#### Error Response (400 Bad Request)
+```json
+{
+  "error": {
+    "type": "string",
+    "description": "Error message",
+    "example": "Invalid input parameters"
+  },
+  "details": {
+    "type": "object",
+    "description": "Detailed error information",
+    "example": {
+      "content": "Content must be between 50 and 10000 characters",
+      "check_type": "At least one check type must be specified"
+    }
+  }
+}
+```
+
+#### Error Response (401 Unauthorized)
+```json
+{
+  "error": {
+    "type": "string",
+    "description": "Authentication error message",
+    "example": "Invalid or missing API key"
+  }
+}
+```
+
+#### Error Response (429 Too Many Requests)
+```json
+{
+  "error": {
+    "type": "string",
+    "description": "Rate limit error message",
+    "example": "Rate limit exceeded. Please try again later."
+  }
+}
+```
+
+### Rate Limits
+- 30 requests per minute per API key for ethics check (due to computational intensity)
+- Exceeding the limit results in a 429 status code
+
+### Expected Response Time
+- Under 3 seconds for basic checks on content under 1000 words
+- Under 10 seconds for comprehensive checks on content under 3000 words
+- Under 20 seconds for comprehensive checks on content up to 10000 words
